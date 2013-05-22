@@ -3,18 +3,28 @@
 <head>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="/css/main.css"/>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
-<script src="//maps.googleapis.com/maps/api/js?key=AIzaSyBmV9dUAqzsNbvOSjQxi7Yu2BTwPU_PjCM&sensor=false"></script>
-<script src="/js/main.js"></script>
+  <script id="performance-template" type="text/x-handlebars-template">
+    <div class="performance">
+      <div>Artist: {{artist.groupname}}</div>
+      <div>Time: {{start_time}}</div>
+    </div>
+  </script>
 </head>
 <body>
   <div id="filters-container">
     <div id="filters">Filters</div>
   </div>
   <div id="map-container">
-    <div id="performances">Performances</div>
+    <div id="performances">
+      <h3 id="venue-name"></h3>
+      <div id="performances-list"></div>
+    </div>
     <div id="map-canvas"/>
   </div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script src="//maps.googleapis.com/maps/api/js?key=AIzaSyBmV9dUAqzsNbvOSjQxi7Yu2BTwPU_PjCM&sensor=false"></script>
+<script src="//raw.github.com/wycats/handlebars.js/1.0.0-rc.4/dist/handlebars.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

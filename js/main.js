@@ -8,6 +8,9 @@ function init() {
 
   var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
+  var source = $("#performance-template").html();
+  var template = Handlebars.compile(source);
+
   var md = new MapData();
   md.load('http://s3.amazonaws.com/makemusicmatch-dev/appdata/madison.json', function() {
 
@@ -15,32 +18,38 @@ function init() {
     for (var i = 0; i < venues.length; i++) {
       var venue = venues[i];
 
-      // TODO: handle venues with address but no lat lng
-      if (venue.lat && venue.lng) {
-        var position = new google.maps.LatLng(venue.lat, venue.lng);
+      if (venue.performances.length != 0) {
+        // TODO: handle venues with address but no lat lng
+        if (venue.lat && venue.lng) {
+          var position = new google.maps.LatLng(venue.lat, venue.lng);
 
-        var marker = new google.maps.Marker({
-          position: position,
-          map: map,
-          title: venue.name
-        });
+          var marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: venue.name
+          });
 
-        google.maps.event.addListener(marker, 'click', (function(venue) {
-          return function() {
-            var performances = venue.performances;
+          google.maps.event.addListener(marker, 'click', (function(venue) {
+            return function() {
+              var performances = venue.performances;
+              $("#venue-name").html(venue.name);
 
-            for (var j = 0; j < performances.length; j++) {
-              var performance = performances[j];
-              console.log(performance);
+              $("#performances-list").empty();
+              for (var j = 0; j < performances.length; j++) {
+                var performance = performances[j];
+                var html = template(performance);
+
+                $("#performances-list").append(html);
+              }
             }
-          }
-        })(venue));
+          })(venue));
+        }
       }
     }
 
-    var results = md.search({
+    /*var results = md.search({
       'genre': 'Jazz'
-    });
+    });*/
   });
 }
 $(document).ready(init);

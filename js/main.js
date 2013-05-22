@@ -36,9 +36,15 @@ function init() {
 
               $("#performances-list").empty();
               for (var j = 0; j < performances.length; j++) {
-                var performance = performances[j];
-                var html = template(performance);
+                // Don't modify exisiting object
+                var performance = jQuery.extend(true, {}, performances[j]);
 
+                var dateTime = performance.start_time.split(" ");
+                var time = dateTime[1].split(":");
+
+                performance.start_time = time[0] + ":" + time[1];
+
+                var html = template(performance);
                 $("#performances-list").append(html);
               }
             }

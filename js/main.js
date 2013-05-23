@@ -14,11 +14,14 @@ function MakeMusicMap() {
     "Standards"
   ];
 
+  var markerIconUrl = "http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=";
+
 
   var map;
   var mapData;
   var perfTemplate;
   var markers = [];
+  var selectedMarker;
 
   this.init = function() {
     _.each(genres, function(g) {
@@ -29,7 +32,7 @@ function MakeMusicMap() {
         'genre': $(e.target).val()
       });
 
-      clearPerformancesList();
+      deselectVenue();
       clearMarkers();
       populateMap();
     });
@@ -60,6 +63,10 @@ function MakeMusicMap() {
     google.maps.visualRefresh = true;
 
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+    google.maps.event.addListener(map, 'click', function() {
+      deselectVenue();
+    });
   }
 
   function populateMap() {
@@ -80,29 +87,58 @@ function MakeMusicMap() {
 
           markers.push(marker);
 
-          google.maps.event.addListener(marker, 'click', (function(venue) {
-            return function() {
-              var performances = venue.performances;
-              $("#venue-name").html(venue.name);
-
-              $("#performances-list").empty();
-              for (var j = 0; j < performances.length; j++) {
-                // Don't modify exisiting object
-                var performance = $.extend({}, performances[j]);
-
-                var dateTime = performance.start_time.split(" ");
-                var time = dateTime[1].split(":");
-
-                performance.start_time = time[0] + ":" + time[1];
-
-                var html = perfTemplate(performance);
-                $("#performances-list").append(html);
+          google.maps.event.addListener(marker, 'click',
+            (function(venue, marker) {
+              return function() {
+                selectVenue(venue, marker)
               }
-            }
-          })(venue));
+            })(venue, marker));
+
+          google.maps.event.addListener(marker, 'dblclick',
+            (function(marker) {
+              return function() {
+                map.setCenter(marker.getPosition());
+                map.setZoom(map.getZoom() + 1);
+              }
+            })(marker));
         }
       }
     }
+  }
+
+  function selectVenue(venue, marker) {
+    deselectVenue();
+
+    marker.setIcon(markerIconUrl + "1.5");
+    marker.setZIndex(9999);
+    selectedMarker = marker;
+
+    var performances = venue.performances;
+    $("#venue-name").html(venue.name);
+
+    $("#performances-list").empty();
+    for (var j = 0; j < performances.length; j++) {
+      // Don't modify exisiting object
+      var performance = $.extend({}, performances[j]);
+
+      var dateTime = performance.start_time.split(" ");
+      var time = dateTime[1].split(":");
+
+      performance.start_time = time[0] + ":" + time[1];
+
+      var html = perfTemplate(performance);
+      $("#performances-list").append(html);
+    }
+  }
+
+  function deselectVenue() {
+    if (typeof selectedMarker !== "undefined") {
+      selectedMarker.setIcon(markerIconUrl + "1");
+      selectedMarker.setZIndex();
+    }
+
+    $("#performances-list").empty();
+    $("#venue-name").empty();
   }
 
   function clearMarkers() {
@@ -110,11 +146,6 @@ function MakeMusicMap() {
       m.setMap(null);
     });
     markers = [];
-  }
-
-  function clearPerformancesList() {
-    $("#performances-list").empty();
-    $("#venue-name").empty();
   }
 }
 

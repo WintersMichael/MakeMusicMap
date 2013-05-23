@@ -1,20 +1,69 @@
-function init() {
-  var mapOptions = {
-    center: new google.maps.LatLng(43.07, -89.4),
-    zoom: 12,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
-  google.maps.visualRefresh = true;
+function MakeMusicMap() {
+  var genres = [
+    "Classical",
+    "Electronic",
+    "Experimental",
+    "Gospel/Religious",
+    "Hip-Hop",
+    "Jazz",
+    "Kids",
+    "Other",
+    "Pop",
+    "R&B",
+    "Rock",
+    "Standards"
+  ];
 
-  var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
-  var source = $("#performance-template").html();
-  var template = Handlebars.compile(source);
+  var map;
+  var mapData;
+  var perfTemplate;
+  var markers = [];
 
-  var md = new MapData();
-  md.load('http://s3.amazonaws.com/makemusicmatch-dev/appdata/madison.json', function() {
+  this.init = function() {
+    _.each(genres, function(g) {
+      $("#genre-filter").append("<option value=\"" + g + "\">" + g + "</option>");
+    });
+    $("#genre-filter").change(function(e) {
+      var results = mapData.search({
+        'genre': $(e.target).val()
+      });
 
-    var venues = md.data;
+      clearPerformancesList();
+      clearMarkers();
+      populateMap();
+    });
+
+    for (var i = 0; i < 12; i++) {
+      var hour = 10 + i;
+      $("#time-filter").append("<option value=\"" + hour + "\">" + hour + ":00</option>");
+    }
+    $("#time-filter").change(function(e) {
+
+    });
+
+    initMap();
+
+    var source = $("#performance-template").html();
+    perfTemplate = Handlebars.compile(source);
+
+    mapData = new MapData();
+    mapData.load('http://s3.amazonaws.com/makemusicmatch-dev/appdata/madison.json', populateMap);
+  }
+
+  function initMap() {
+    var mapOptions = {
+      center: new google.maps.LatLng(43.07, -89.4),
+      zoom: 12,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    google.maps.visualRefresh = true;
+
+    map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+  }
+
+  function populateMap() {
+    var venues = mapData.data;
     for (var i = 0; i < venues.length; i++) {
       var venue = venues[i];
 
@@ -29,6 +78,8 @@ function init() {
             title: venue.name
           });
 
+          markers.push(marker);
+
           google.maps.event.addListener(marker, 'click', (function(venue) {
             return function() {
               var performances = venue.performances;
@@ -37,14 +88,14 @@ function init() {
               $("#performances-list").empty();
               for (var j = 0; j < performances.length; j++) {
                 // Don't modify exisiting object
-                var performance = jQuery.extend(true, {}, performances[j]);
+                var performance = $.extend({}, performances[j]);
 
                 var dateTime = performance.start_time.split(" ");
                 var time = dateTime[1].split(":");
 
                 performance.start_time = time[0] + ":" + time[1];
 
-                var html = template(performance);
+                var html = perfTemplate(performance);
                 $("#performances-list").append(html);
               }
             }
@@ -52,13 +103,21 @@ function init() {
         }
       }
     }
+  }
 
-    /*var results = md.search({
-      'genre': 'Jazz'
-    });*/
-  });
+  function clearMarkers() {
+    _.each(markers, function(m) {
+      m.setMap(null);
+    });
+    markers = [];
+  }
+
+  function clearPerformancesList() {
+    $("#performances-list").empty();
+    $("#venue-name").empty();
+  }
 }
-$(document).ready(init);
+
 
 function MapData() {
 
@@ -107,7 +166,7 @@ function MapData() {
     */
     startTime = Date.now();
 
-    this.data = _.extend([], assocData); //copy data so caller can't modify our source data
+    this.data = $.extend(true, [], assocData); //copy data so caller can't modify our source data
 
     if (typeof(terms) === 'undefined') {
       //no search terms defined by caller
@@ -168,7 +227,7 @@ function MapData() {
       }
     }
 
-    this.data = _.extend([], assocData); //copy data into public property so caller can't modify our source data
+    this.data = $.extend(true, [], assocData); //copy data into public property so caller can't modify our source data
 
     //alert("MapData.load() assoc complete: " + (Date.now() - startTime) + "ms");
 
@@ -177,3 +236,7 @@ function MapData() {
     }
   }
 }
+
+
+var mmm = new MakeMusicMap();
+$(document).ready(mmm.init);

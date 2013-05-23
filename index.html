@@ -6,21 +6,42 @@
   <script id="performance-template" type="text/x-handlebars-template">
     <div class="performance">
       <div>Artist: {{artist.groupname}}</div>
+      <div>Genre: {{artist.genres}}</div>
       <div>Time: {{start_time}}</div>
     </div>
   </script>
 </head>
 <body>
-  <div id="filters-container">
-    <div id="filters">Filters</div>
-  </div>
-  <div id="map-container">
+  <div id="performances-container">
+    <div id="filters">
+      <table>
+        <tr>
+          <td>
+            <label>Genre:</label>
+          </td>
+          <td>
+            <select id="genre-filter">
+              <option value="">All</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Time:</label>
+          </td>
+          <td>
+            <select id="time-filter"></select>
+          </td>
+        </tr>
+      </table>
+    </div>
     <div id="performances">
       <h3 id="venue-name"></h3>
       <div id="performances-list"></div>
     </div>
-    <div id="map-canvas"/>
   </div>
+  <div id="map-canvas"/>
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyBmV9dUAqzsNbvOSjQxi7Yu2BTwPU_PjCM&sensor=false"></script>

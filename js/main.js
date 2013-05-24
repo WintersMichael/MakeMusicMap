@@ -104,7 +104,7 @@ function MakeMusicMap() {
 
     var cityId = parseInt(window.location.search.split("=")[1], 10);
     $.ajax({
-      url: "/cities.json",
+      url: "http://s3.amazonaws.com/appdata2013/cities.json",
       dataType: "json",
       success: function(data) {
         var city = _.find(data, function(c) {
@@ -115,9 +115,9 @@ function MakeMusicMap() {
 
         map.setCenter(new google.maps.LatLng(city.lat, city.lng));
       },
-      error: function(xhr, textStatus, error) {
-        console.log(textStatus);
-      }
+		error: function(jqxhr, textStatus, errorThrown) {
+			alert('Error retrieving city data: ' + textStatus + ' ' + errorThrown); 
+		}
     });
   }
 

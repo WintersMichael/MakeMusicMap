@@ -32,7 +32,9 @@ body {
 }
 
 #performances {
-  width: 339px;
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  top: 115px;
   padding: 15px;
   text-align: center;
   overflow-y:scroll;

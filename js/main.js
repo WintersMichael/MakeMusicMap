@@ -180,9 +180,13 @@ function MakeMusicMap() {
     marker.setZIndex(9999);
     selectedMarker = marker;
 
-    var performances = venue.performances;
     $("#venue-name").html(venue.name);
     $("#venue-address").html(venue.address);
+
+    var performances = _.sortBy(venue.performances, function(p) {
+      var timeOb = parseTime(p.start_time);
+      return timeOb.hour24 + timeOb.minute / 60;
+    });
 
     $("#performances-list").empty();
     for (var j = 0; j < performances.length; j++) {

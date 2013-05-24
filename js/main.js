@@ -137,6 +137,7 @@ function MakeMusicMap() {
 
   function selectVenue(venue, marker) {
     deselectVenue();
+    $("#instructions").hide();
 
     marker.setIcon(markerIconUrl + "1.5");
     marker.setZIndex(9999);
@@ -144,6 +145,7 @@ function MakeMusicMap() {
 
     var performances = venue.performances;
     $("#venue-name").html(venue.name);
+    $("#venue-address").html(venue.address);
 
     $("#performances-list").empty();
     for (var j = 0; j < performances.length; j++) {
@@ -169,6 +171,9 @@ function MakeMusicMap() {
 
     $("#performances-list").empty();
     $("#venue-name").empty();
+    $("#venue-address").empty();
+
+    $("#instructions").show();
   }
 
   function clearMarkers() {

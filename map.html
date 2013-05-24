@@ -4,21 +4,29 @@
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="/css/main.css"/>
   <script id="performance-template" type="text/x-handlebars-template">
-    <div class="performance">
-      <div>Artist: {{artist.groupname}}</div>
-      <div>Genre: {{artist.genres}}</div>
-      <div>Time: {{start_time}} - {{end_time}}</div>
+    <table class="performance">
+      <tr>
+        <td class="label">Artist:</td>
+        <td>{{artist.groupname}}</td>
+      </tr>
+      <tr>
+        <td class="label">Genre:</td>
+        <td>{{artist.genres}}</td>
+      </tr>
+      <tr>
+        <td class="label">Time:</td>
+        <td>{{start_time}} - {{end_time}}</td>
+      </tr>
     </div>
   </script>
 </head>
 <body>
   <div id="performances-container">
     <div id="filters">
+      <div id="filters-title">Filters</div>
       <table>
         <tr>
-          <td>
-            <label>Genre:</label>
-          </td>
+          <td class="filter-label">Genre:</td>
           <td>
             <select id="genre-filter">
               <option value="">All</option>
@@ -26,9 +34,7 @@
           </td>
         </tr>
         <tr>
-          <td>
-            <label>Time:</label>
-          </td>
+          <td class="filter-label">Time:</td>
           <td>
             <select id="time-filter">
               <option value="">All</option>
@@ -38,7 +44,9 @@
       </table>
     </div>
     <div id="performances">
+      <div id="instructions">Click map to view performances.</div>
       <h3 id="venue-name"></h3>
+      <div id="venue-address"></div>
       <div id="performances-list"></div>
     </div>
   </div>

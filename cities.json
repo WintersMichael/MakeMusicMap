@@ -1,13 +1,7 @@
 [
 {
-	"name":"Test NY",
-	"lat":"40.7443912831084",
-	"lng":"-73.9797182617187",
-	"performances":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/testnyperformances.json",
-	"logo":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/mmny-box.png"
-},
-{
-	"name":"New Test NY",
+	"name":"USA National",
+	"id":0,
 	"lat":"40.7143912831084",
 	"lng":"-73.5797182617187",
 	"performances":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/ny.json",
@@ -15,10 +9,18 @@
 },
 {
 	"name":"Madison",
+	"id":3,
 	"lat":"43.07473795351085",
 	"lng":"-89.38417571163177",
-	"performances":"http://s3.amazonaws.com/makemusicmatch-dev/json/madison.json",
+	"performances":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/madison.json",
+	"logo":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/mmny-box.png"
+},
+{
+	"name":"New York",
+	"id":4,
+	"lat":"40.7143912831084",
+	"lng":"-73.9397182617187",
+	"performances":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/ny.json",
 	"logo":"http://s3.amazonaws.com/makemusicmatch-dev/appdata/mmny-box.png"
 }
 ]
-

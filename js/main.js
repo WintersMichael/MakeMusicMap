@@ -50,14 +50,28 @@ function MakeMusicMap() {
     var source = $("#performance-template").html();
     perfTemplate = Handlebars.compile(source);
 
-    mapData = new MapData();
-    mapData.load('http://s3.amazonaws.com/makemusicmatch-dev/appdata/madison.json', populateMap);
+    var cityId = parseInt(window.location.search.split("=")[1], 10);
+    $.ajax({
+      url: "/cities.json",
+      dataType: "json",
+      success: function(data) {
+        var city = _.find(data, function(c) {
+          return c.id == cityId;
+        });
+        mapData = new MapData();
+        mapData.load(city.performances, populateMap);
+
+        map.setCenter(new google.maps.LatLng(city.lat, city.lng));
+      },
+      error: function(xhr, textStatus, error) {
+        console.log(textStatus);
+      }
+    });
   }
 
   function initMap() {
     var mapOptions = {
-      center: new google.maps.LatLng(43.07, -89.4),
-      zoom: 12,
+      zoom: 10,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     google.maps.visualRefresh = true;

@@ -7,7 +7,7 @@
     <div class="performance">
       <div>Artist: {{artist.groupname}}</div>
       <div>Genre: {{artist.genres}}</div>
-      <div>Time: {{start_time}}</div>
+      <div>Time: {{start_time}} - {{end_time}}</div>
     </div>
   </script>
 </head>
@@ -30,7 +30,9 @@
             <label>Time:</label>
           </td>
           <td>
-            <select id="time-filter"></select>
+            <select id="time-filter">
+              <option value="">All</option>
+            </select>
           </td>
         </tr>
       </table>

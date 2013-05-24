@@ -22,15 +22,17 @@ function MakeMusicMap() {
   var perfTemplate;
   var markers = [];
   var selectedMarker;
+  var filterOb = { "genre": null, "time": null }; // The current filter terms
 
   this.init = function() {
     _.each(genres, function(g) {
       $("#genre-filter").append("<option value=\"" + g + "\">" + g + "</option>");
     });
     $("#genre-filter").change(function(e) {
-      var results = mapData.search({
-        'genre': $(e.target).val()
-      });
+      var genre = $(e.target).val();
+      filterOb.genre = genre == "" ? null : genre;
+
+      var results = mapData.search(filterOb);
 
       deselectVenue();
       clearMarkers();
@@ -38,11 +40,24 @@ function MakeMusicMap() {
     });
 
     for (var i = 0; i < 12; i++) {
-      var hour = 10 + i;
-      $("#time-filter").append("<option value=\"" + hour + "\">" + hour + ":00</option>");
+      var from = 10 + i;
+      var until = from + 1;
+
+      fromOb = hour24to12(from);
+      untilOb = hour24to12(until);
+
+      $("#time-filter").append("<option value=\"" + from + "\">" +
+          fromOb.hour + fromOb.suffix + " - " + untilOb.hour + untilOb.suffix + "</option>");
     }
     $("#time-filter").change(function(e) {
+      var time = $(e.target).val();
+      filterOb.time = time == "" ? null : parseInt(time, 10);
 
+      var results = mapData.search(filterOb);
+
+      deselectVenue();
+      clearMarkers();
+      populateMap();
     });
 
     initMap();
@@ -135,10 +150,11 @@ function MakeMusicMap() {
       // Don't modify exisiting object
       var performance = $.extend({}, performances[j]);
 
-      var dateTime = performance.start_time.split(" ");
-      var time = dateTime[1].split(":");
+      var startTimeOb = parseTime(performance.start_time);
+      var endTimeOb = parseTime(performance.end_time);
 
-      performance.start_time = time[0] + ":" + time[1];
+      performance.start_time = timeObToString(startTimeOb);
+      performance.end_time = timeObToString(endTimeOb);
 
       var html = perfTemplate(performance);
       $("#performances-list").append(html);
@@ -173,14 +189,12 @@ function MapData() {
 
   //private properties
 
-  var startTime, endTime; //for timing events
   var assocData; //the 'database' we search
   var onAjaxCompleteCallback; //optionally set when calling MapData.load()
 
   //public functions
 
   this.load = function load(url, successCallback, failCallback) {
-    startTime = Date.now();
     if (typeof(successCallback) === 'function') {
       onAjaxCompleteCallback = successCallback;
     }
@@ -201,7 +215,6 @@ function MapData() {
       Will search the dataset and both return the results and set them as the publicly-available
       property this.data.
 
-
       Example:
 
       search({
@@ -209,23 +222,17 @@ function MapData() {
 
       }};
     */
-    startTime = Date.now();
 
     this.data = $.extend(true, [], assocData); //copy data so caller can't modify our source data
 
-    if (typeof(terms) === 'undefined') {
-      //no search terms defined by caller
-      return this.data;
-    }
-
-
-    if (typeof(terms.genre) != 'undefined') {
+    if (terms.genre != null) {
       this.data = filterGenre(this.data, terms.genre);
     }
 
-    //keep passing this.data through other filter functions until final results are reached
+    if (terms.time != null) {
+      this.data = filterTime(this.data, terms.time);
+    }
 
-    //alert("MapData.search() complete: " + (Date.now() - startTime) + "ms");
     return this.data;
   }
 
@@ -239,7 +246,28 @@ function MapData() {
         //filter venue performances by artist genre
         v.performances = _.filter(v.performances, function(p) {
           return p.artist.genres.match(gSearch);
-        })
+        });
+        return v;
+      })
+      .filter(function(v) {
+        //filter venues with no matching performances
+        return v.performances.length > 0;
+      })
+      .value();
+  }
+
+  // Pass in 24-hour time. Filters by performance time intersection with hour
+  // to hour + 1.
+  function filterTime(venues, hour) {
+    return _.chain(venues)
+      .map(function(v) {
+        v.performances = _.filter(v.performances, function(p) {
+          startTimeOb = parseTime(p.start_time);
+          endTimeOb = parseTime(p.end_time);
+
+          return (startTimeOb.hour24 < hour && (endTimeOb.hour24 > hour || endTimeOb.hour24 == hour && endTimeOb.minute > 0)) ||
+                 (startTimeOb.hour24 == hour);
+        });
         return v;
       })
       .filter(function(v) {
@@ -251,9 +279,6 @@ function MapData() {
 
 
   function onAjaxComplete(ajaxData) {
-    //alert("MapData.load() ajax complete: " + (Date.now() - startTime) + "ms");
-    startTime = Date.now();
-
     //associate the data.
     assocData = [];
     for (var v = 0; v < ajaxData.venues.length; v++) {
@@ -274,12 +299,34 @@ function MapData() {
 
     this.data = $.extend(true, [], assocData); //copy data into public property so caller can't modify our source data
 
-    //alert("MapData.load() assoc complete: " + (Date.now() - startTime) + "ms");
-
     if (typeof(onAjaxCompleteCallback) === 'function') {
       onAjaxCompleteCallback();
     }
   }
+}
+
+
+// Parse time in format "... HH:MM:SS" into { hour, minute, suffix }
+function parseTime(str) {
+  var time = str.split(" ")[1];
+  var hms = _.map(time.split(":"), function(s) { return parseInt(s, 10); });
+  var hour12ob = hour24to12(hms[0]);
+
+  return { "hour24": hms[0], "hour12": hour12ob.hour, "minute": hms[1], "suffix": hour12ob.suffix };
+}
+
+// Convert timeOb produced by parseTime into a string
+function timeObToString(timeOb) {
+  return timeOb.hour12 + ":" +
+         (timeOb.minute < 10 ? "0" + timeOb.minute : timeOb.minute) +
+         timeOb.suffix;
+}
+
+function hour24to12(hour24) {
+  var hour12 = hour24 > 12 ? hour24 - 12 : hour24;
+  var suffix = hour24 < 12 ? "AM" : "PM";
+
+  return { "hour": hour12, "suffix": suffix };
 }
 
 

@@ -1,17 +1,32 @@
 function MakeMusicMap() {
   var genres = [
+    "Bluegrass",
+    "Blues",
+    "Celtic",
     "Classical",
+    "Country",
     "Electronic",
     "Experimental",
+    "Folk",
+    "Funk",
     "Gospel/Religious",
+    "Gypsy",
     "Hip-Hop",
+    "Irish",
     "Jazz",
     "Kids",
+    "Latin",
+    "Marching Band",
     "Other",
+    "Polka",
     "Pop",
     "R&B",
+    "Reggae",
     "Rock",
-    "Standards"
+    "Roots",
+    "Soul",
+    "Standards",
+    "World"
   ];
 
   var markerIconUrl = "http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=";

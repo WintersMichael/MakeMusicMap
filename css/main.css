@@ -24,8 +24,8 @@ body {
 }
 
 #filters {
-  height: 85px;
-  padding: 15px 90px 15px 90px;
+  height: 105px;
+  padding: 15px 70px 15px 70px;
   border-bottom-style:solid;
   border-bottom-width:1px;
   border-bottom-color:#BBB;
@@ -34,7 +34,7 @@ body {
 #performances {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  top: 115px;
+  top: 135px;
   padding: 15px;
   text-align: center;
   overflow-y:scroll;
@@ -72,5 +72,7 @@ body {
 }
 
 .filter-label {
+  text-align: right;
   font-size: 0.9em;
+  padding-right: 10px;
 }

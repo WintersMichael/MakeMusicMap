@@ -22,7 +22,7 @@ function MakeMusicMap() {
   var perfTemplate;
   var markers = [];
   var selectedMarker;
-  var filterOb = { "genre": null, "time": null }; // The current filter terms
+  var filterOb = { "genre": null, "current": false, "time": null }; // The current filter terms
 
   this.init = function() {
     _.each(genres, function(g) {
@@ -32,7 +32,7 @@ function MakeMusicMap() {
       var genre = $(e.target).val();
       filterOb.genre = genre == "" ? null : genre;
 
-      var results = mapData.search(filterOb);
+      mapData.search(filterOb);
 
       deselectVenue();
       clearMarkers();
@@ -53,7 +53,25 @@ function MakeMusicMap() {
       var time = $(e.target).val();
       filterOb.time = time == "" ? null : parseInt(time, 10);
 
-      var results = mapData.search(filterOb);
+      mapData.search(filterOb);
+
+      deselectVenue();
+      clearMarkers();
+      populateMap();
+    });
+
+    $("#current").change(function(e) {
+      var selected = $(e.target).prop('checked');
+
+      if (selected) {
+        filterOb.current = true;
+        $("#time-filter").attr("disabled", "disabled");
+      } else {
+        filterOb.current = false;
+        $("#time-filter").removeAttr("disabled");
+      }
+
+      mapData.search(filterOb);
 
       deselectVenue();
       clearMarkers();
@@ -234,7 +252,9 @@ function MapData() {
       this.data = filterGenre(this.data, terms.genre);
     }
 
-    if (terms.time != null) {
+    if (terms.current) {
+      this.data = filterNow(this.data);
+    } else if (terms.time != null) {
       this.data = filterTime(this.data, terms.time);
     }
 
@@ -245,34 +265,48 @@ function MapData() {
   //private functions
 
   function filterGenre(venues, genre) {
-    return _.chain(venues)
-      .map(function(v) {
-        var gSearch = new RegExp(genre);
-        //filter venue performances by artist genre
-        v.performances = _.filter(v.performances, function(p) {
-          return p.artist.genres.match(gSearch);
-        });
-        return v;
-      })
-      .filter(function(v) {
-        //filter venues with no matching performances
-        return v.performances.length > 0;
-      })
-      .value();
+    var gSearch = new RegExp(genre);
+
+    return filter(venues, function(p) {
+      return p.artist.genres.match(gSearch);
+    });
   }
 
   // Pass in 24-hour time. Filters by performance time intersection with hour
   // to hour + 1.
   function filterTime(venues, hour) {
+    return filter(venues, function(p) {
+      startTimeOb = parseTime(p.start_time);
+      endTimeOb = parseTime(p.end_time);
+
+      return (startTimeOb.hour24 < hour && (endTimeOb.hour24 > hour || endTimeOb.hour24 == hour && endTimeOb.minute > 0)) ||
+             (startTimeOb.hour24 == hour);
+    });
+  }
+
+  // Filter by currently performing
+  function filterNow(venues, hour, minute) {
+    var now = new Date();
+    if (now.getMonth() != 5 || now.getDate() != 21) {
+      return [];
+    }
+
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+
+    return filter(venues, function(p) {
+      startTimeOb = parseTime(p.start_time);
+      endTimeOb = parseTime(p.end_time);
+
+      return (hour == startTimeOb.hour24 && minute >= startTimeOb.minute || hour > startTimeOb.hour24) &&
+             (hour == endTimeOb.hour24 && minute <= endTimeOb.minute     || hour < endTimeOb.hour24);
+    });
+  }
+
+  function filter(venues, filterFunc) {
     return _.chain(venues)
       .map(function(v) {
-        v.performances = _.filter(v.performances, function(p) {
-          startTimeOb = parseTime(p.start_time);
-          endTimeOb = parseTime(p.end_time);
-
-          return (startTimeOb.hour24 < hour && (endTimeOb.hour24 > hour || endTimeOb.hour24 == hour && endTimeOb.minute > 0)) ||
-                 (startTimeOb.hour24 == hour);
-        });
+        v.performances = _.filter(v.performances, filterFunc);
         return v;
       })
       .filter(function(v) {

@@ -113,6 +113,7 @@ function MakeMusicMap() {
         mapData = new MapData();
         mapData.load(city.performances, populateMap);
 
+        $("#city-logo").attr("src", city.logo);
         map.setCenter(new google.maps.LatLng(city.lat, city.lng));
       },
 		error: function(jqxhr, textStatus, errorThrown) {

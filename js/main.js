@@ -90,7 +90,7 @@ function MakeMusicMap() {
 
 	function showMap() {
 		var mapOptions = {
-			zoom: 10,
+			zoom: curCity.webzoom,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
 		google.maps.visualRefresh = true;
@@ -435,7 +435,6 @@ function MapData() {
 			assocData[v].performances = _.filter(ajaxData.performances, function(p) {
 				return p.venue_id == assocData[v].id;
 			});
-			// console.log(JSON.stringify(assocData[v].performances));
 			for (var p = 0; p < assocData[v].performances.length; p++) {
 				//venue.performances.artist
 				assocData[v].performances[p].artist = _.filter(ajaxData.artists, function(a) {

@@ -106,3 +106,8 @@ body {
 #venuename-filter {
   width: 100%;
 }
+
+.fancybox-title .child a {
+  color: white;
+  
+}

@@ -7,9 +7,21 @@
   <script id="performance-template" type="text/x-handlebars-template">
     <div class="performance">
       {{#if artist.image_url}}
-      <a class="artist-image-link" href={{artist.image_url}} title="{{artist.groupname}}">
-        <img class="artist-image" src={{artist.image_url}} />
-      </a>
+        {{#if artist.website}}
+            <a class="artist-image-link" href={{artist.image_url}} title="{{artist.groupname}}<br/><a href='{{artist.website}}' target='_blank'>Artist Website</a>">
+        {{else}}
+          {{#if artist.facebook}}
+            <a class="artist-image-link" href={{artist.image_url}} title="{{artist.groupname}}<br/><a href='{{artist.facebook}}' target='_blank'>Artist Facebook</a>">
+          {{else}}
+            {{#if artist.twitter}}
+              <a class="artist-image-link" href={{artist.image_url}} title="{{artist.groupname}}<br/><a href='{{artist.twitter}}' target='_blank'>Artist Twitter</a>">
+            {{else}}
+              <a class="artist-image-link" href={{artist.image_url}} title="{{artist.groupname}}">
+            {{/if}}
+          {{/if}}
+        {{/if}}
+          <img class="artist-image" src={{artist.image_url}} />
+        </a>
       {{/if}}
       <table>
         <tr>

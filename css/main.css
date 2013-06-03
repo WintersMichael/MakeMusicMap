@@ -109,5 +109,8 @@ body {
 
 .fancybox-title .child a {
   color: white;
-  
+}
+
+.fancybox-overlay {
+  background: url('fancybox_overlay_white.png');
 }

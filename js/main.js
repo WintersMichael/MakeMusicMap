@@ -264,14 +264,7 @@ function MakeMusicMap() {
 			$("#performances-list").append(html);
 		}
 
-		$(".performance img").click(function(e) {
-			$.fancybox.open(
-				$(e.target).attr('src'),
-				{
-					"closeBtn" : true,
-				}
-			);
-		});
+		$(".artist-image-link").fancybox();
 	}
 
 

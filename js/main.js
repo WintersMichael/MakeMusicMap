@@ -162,7 +162,7 @@ function MakeMusicMap() {
 			populateMap();
 		});
 
-		$("#artistname-filter").keypress(function(e) {
+		$("#artistname-filter").keyup(function(e) {
 			clearTimeout(keypressTimeoutObj);
 			keypressTimeoutObj = setTimeout(
 				function() {
@@ -178,7 +178,7 @@ function MakeMusicMap() {
 			);
 		});
 
-		$("#venuename-filter").keypress(function(e) {
+		$("#venuename-filter").keyup(function(e) {
 			clearTimeout(keypressTimeoutObj);
 			keypressTimeoutObj = setTimeout(
 				function() {

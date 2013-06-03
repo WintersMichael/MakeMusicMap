@@ -2,13 +2,12 @@
 <html>
 <head>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="css/jquery.fancybox.css"/>
   <link rel="stylesheet" href="css/main.css"/>
   <script id="performance-template" type="text/x-handlebars-template">
     <div class="performance">
       {{#if artist.image_url}}
-      <a href={{artist.image_url}} target="_blank">
-        <img id="artist-image" src={{artist.image_url}} />
-      </a>
+      <img id="artist-image" src={{artist.image_url}} />
       {{/if}}
       <table>
         <tr>
@@ -83,6 +82,7 @@
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyABKW_t6E_XZZTnYrASXtPAXk_ecPUx9Pk&sensor=false"></script>
 <script type="text/javascript" src="js/handlebars.js"></script>
+<script type="text/javascript" src="js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>

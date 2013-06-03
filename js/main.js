@@ -263,6 +263,15 @@ function MakeMusicMap() {
 			var html = perfTemplate(performance);
 			$("#performances-list").append(html);
 		}
+
+		$(".performance img").click(function(e) {
+			$.fancybox.open(
+				$(e.target).attr('src'),
+				{
+					"closeBtn" : true,
+				}
+			);
+		});
 	}
 
 

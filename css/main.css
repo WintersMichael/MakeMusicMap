@@ -56,6 +56,10 @@ body {
   border-top-width:1px;
 }
 
+.performance img:hover {
+  cursor:pointer;
+}
+
 #filters-title {
   font-size: 1.2em;
   text-align: center;

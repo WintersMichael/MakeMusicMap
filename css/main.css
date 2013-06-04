@@ -28,7 +28,7 @@ body {
   padding: 15px 20px 15px 140px;
   border-bottom-style:solid;
   border-bottom-width:1px;
-  border-bottom-color:#BBB;
+  border-bottom-color:#777;
 }
 
 #performances {
@@ -53,8 +53,9 @@ body {
   padding-left: 3px;
   padding-right: 5px;
   margin-top: 10px;
-  border-top-style:solid;
-  border-top-width:1px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #AAA;
 }
 
 .performance img:hover {

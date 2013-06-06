@@ -88,6 +88,8 @@ function MakeMusicMap() {
 		showMap();
 		populateMap();
 		activateUI();
+
+		$("#loading").hide()
 	}
 
 

@@ -89,7 +89,7 @@ function MakeMusicMap() {
 		populateMap();
 		activateUI();
 
-		$("#loading").hide()
+		$("#loading").fadeOut();
 	}
 
 

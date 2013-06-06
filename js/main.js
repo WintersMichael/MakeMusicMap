@@ -64,8 +64,11 @@ function MakeMusicMap() {
 	function onCitiesLoaded(data) {
 		cities = data;
 
-		//TODO handle no id to load id 0
-		var cityId = parseInt(window.location.search.split("=")[1], 10);
+		var cityId = 0;
+		var queryString = window.location.search;
+		if (queryString != "")
+			cityId = parseInt(queryString.split("=")[1], 10);
+
 		changeCity(cityId);
 	}
 

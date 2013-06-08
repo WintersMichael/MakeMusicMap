@@ -104,5 +104,12 @@
 <script type="text/javascript" src="js/handlebars.js"></script>
 <script type="text/javascript" src="js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    if (parent) {
+      $('head').append('<link rel="stylesheet" href="' + document.referrer + 'override.css" />');
+    }
+  });
+</script>
 </body>
 </html>

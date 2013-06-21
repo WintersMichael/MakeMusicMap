@@ -33,7 +33,13 @@ function MakeMusicMap() {
 		"World"
 	];
 
-	var markerIconUrl = "http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=";
+	var redMarkerIcon = {
+		url: "http://www.google.com/intl/en_us/mapfiles/ms/micons/red-dot.png"
+	};
+
+	var blueMarkerIcon = {
+		url: "http://www.google.com/intl/en_us/mapfiles/ms/micons/blue-dot.png"
+	};
 
 	var map = null;
 	var mapData;
@@ -210,7 +216,15 @@ function MakeMusicMap() {
 				if (venue.lat && venue.lng) {
 					var position = new google.maps.LatLng(venue.lat, venue.lng);
 
+					var icon;
+					if (venue.rain_accommodations != "Performance will be canceled") {
+						icon = blueMarkerIcon;
+					} else {
+						icon = redMarkerIcon;
+					}
+
 					var marker = new google.maps.Marker({
+						icon: icon,
 						position: position,
 						map: map,
 						title: venue.name
@@ -242,7 +256,10 @@ function MakeMusicMap() {
 		deselectVenue();
 		$("#instructions").hide();
 
-		marker.setIcon(markerIconUrl + "1.5");
+		marker.setIcon({
+			url: marker.getIcon().url,
+			scaledSize: new google.maps.Size(40, 40)
+		});
 		marker.setZIndex(9999);
 		selectedMarker = marker;
 
@@ -275,7 +292,10 @@ function MakeMusicMap() {
 
 	function deselectVenue() {
 		if (typeof selectedMarker !== "undefined") {
-			selectedMarker.setIcon(markerIconUrl + "1");
+			selectedMarker.setIcon({
+				url: selectedMarker.getIcon().url,
+				scaledSize: new google.maps.Size(32, 32)
+			});
 			selectedMarker.setZIndex();
 		}
 

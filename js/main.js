@@ -265,6 +265,7 @@ function MakeMusicMap() {
 
 		$("#venue-name").html(venue.name);
 		$("#venue-address").html(venue.address);
+		$("#venue-rain").html("In case of rain: " + venue.rain_accommodations);
 
 		var performances = _.sortBy(venue.performances, function(p) {
 			var timeOb = parseTime(p.start_time);
@@ -302,6 +303,7 @@ function MakeMusicMap() {
 		$("#performances-list").empty();
 		$("#venue-name").empty();
 		$("#venue-address").empty();
+		$("#venue-rain").empty();
 
 		$("#instructions").show();
 	}

@@ -46,14 +46,18 @@ function MakeMusicMap() {
 	var cities;
 	var curCity;
 	var perfTemplate;
+	var cityTemplate;
 	var markers = [];
 	var selectedMarker;
 	var filterOb = { "genre": null, "current": false, "time": null, "artist": "", "venue": "" }; // The current filter terms
 	var keypressTimeoutObj;
 
 	this.init = function() {
-		var source = $("#performance-template").html();
-		perfTemplate = Handlebars.compile(source);
+		var perfSource = $("#performance-template").html();
+		perfTemplate = Handlebars.compile(perfSource);
+
+		var citySource = $("#city-template").html();
+		cityTemplate = Handlebars.compile(citySource);
 
 		$.ajax({
 			url: "http://s3.amazonaws.com/appdata2013/cities.json",
@@ -65,43 +69,98 @@ function MakeMusicMap() {
 			}
 		});
 
+		$("#back-to-world").click(function() {
+			showWorld();
+		});
 	};
 
 	function onCitiesLoaded(data) {
 		cities = data;
 
-		var cityId = 0;
-		var queryString = window.location.search;
-		if (queryString != "")
-			cityId = parseInt(queryString.split("=")[1], 10);
+		var promise;
 
-		changeCity(cityId);
+		var queryString = window.location.search;
+		if (queryString === "") {
+			promise = showWorld();
+		} else {
+			var cityId = parseInt(queryString.split("=")[1], 10);
+			promise = showCity(cityId);
+		}
+
+		promise.always(function() {
+			$("#loading").fadeOut();
+		});
 	}
 
+	function showWorld() {
+		clearMarkers();
 
-	function changeCity(id) {
+		showMap(2, 27, -15);
+
+		$("#cities-list").empty();
+
+		for (var i = 0; i < cities.length; i++) {
+			var position = new google.maps.LatLng(cities[i].lat, cities[i].lng);
+
+			var marker = new google.maps.Marker({
+				icon: redMarkerIcon,
+				position: position,
+				map: map,
+				title: cities[i].name
+			});
+
+			markers.push(marker);
+
+			google.maps.event.addListener(marker, 'click',
+				(function(city, marker) {
+					return function() {
+						showCity(city.id)
+					}
+				})(cities[i], marker)
+			);
+
+			var html = cityTemplate(cities[i]);
+			$("#cities-list").append(html);
+		}
+
+		$(".city").click(function() {
+			showCity($(this).data("id"));
+		});
+
+		$("#performances-container").hide();
+		$("#cities-container").show();
+
+		return $.Deferred().resolve();
+	}
+
+	function showCity(id) {
+		clearMarkers();
+		deselectVenue();
+		resetFilters();
+
 		curCity = _.find(cities, function(c) {
 			return c.id == id;
 		});
 		mapData = new MapData();
-		mapData.load(curCity.performances, onMapDataLoaded);
 
-		$("#city-logo").attr("src", curCity.logo);
+		var promise = mapData.load(curCity.performances);
+		promise.then(function() {
+			showMap(curCity.webzoom, curCity.lat, curCity.lng);
+
+			populateMap();
+			activateUI();
+		});
+
+		$(".left-pane .city-logo").attr("src", curCity.logo);
+
+		$("#cities-container").hide();
+		$("#performances-container").show();
+
+		return promise;
 	}
 
-
-	function onMapDataLoaded() {
-		showMap();
-		populateMap();
-		activateUI();
-
-		$("#loading").fadeOut();
-	}
-
-
-	function showMap() {
+	function showMap(zoom, lat, lng) {
 		var mapOptions = {
-			zoom: curCity.webzoom,
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
 		google.maps.visualRefresh = true;
@@ -110,7 +169,8 @@ function MakeMusicMap() {
 			map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 		}
 
-		map.setCenter(new google.maps.LatLng(curCity.lat, curCity.lng));
+		map.setCenter(new google.maps.LatLng(lat, lng));
+		map.setZoom(zoom);
 
 		google.maps.event.addListener(map, 'click', function() {
 			deselectVenue();
@@ -206,6 +266,14 @@ function MakeMusicMap() {
 		});
 	}
 
+	function resetFilters() {
+		$("#genre-filter").val("All");
+		$("#artistname-filter").val("");
+		$("#venuename-filter").val("");
+		$("#time-filter").val("All");
+		$("#current").prop("checked", false).trigger('change');
+	}
+
 	function populateMap() {
 		var venues = mapData.data;
 		for (var i = 0; i < venues.length; i++) {
@@ -237,7 +305,8 @@ function MakeMusicMap() {
 							return function() {
 								selectVenue(venue, marker)
 							}
-						})(venue, marker));
+						})(venue, marker)
+					);
 
 					google.maps.event.addListener(marker, 'dblclick',
 						(function(marker) {
@@ -245,7 +314,8 @@ function MakeMusicMap() {
 								map.setCenter(marker.getPosition());
 								map.setZoom(map.getZoom() + 1);
 							}
-						})(marker));
+						})(marker)
+					);
 				}
 			}
 		}
@@ -324,25 +394,22 @@ function MapData() {
 	this.data = []; //where we store search results
 
 	//private properties
+	var that = this;
 	var assocData; //the 'database' we search
-	var onAjaxCompleteCallback; //optionally set when calling MapData.load()
 
 
 	//public functions
 
-	this.load = function load(url, successCallback, failCallback) {
-		if (typeof(successCallback) === 'function') {
-			onAjaxCompleteCallback = successCallback;
-		}
-		if (typeof(failCallback) === 'function') {
-			onAjaxFailCallback = failCallback;
-		}
-		$.ajax({
+	this.load = function load(url) {
+		var deferred = $.ajax({
 			dataType: "json",
 			url: url,
-			success: onAjaxComplete,
 			context: this
+		}).then(function(ajaxData) {
+			associateData(ajaxData);
 		});
+
+		return deferred.promise();
 	}
 
 	this.search = function search(terms) {
@@ -385,6 +452,27 @@ function MapData() {
 
 	//private functions
 
+	function associateData(ajaxData) {
+		//associate the data.
+		assocData = [];
+		for (var v = 0; v < ajaxData.venues.length; v++) {
+			//venue
+			assocData.push(ajaxData.venues[v]);
+			//venue.performances
+			assocData[v].performances = _.filter(ajaxData.performances, function(p) {
+				return p.venue_id == assocData[v].id;
+			});
+			for (var p = 0; p < assocData[v].performances.length; p++) {
+				//venue.performances.artist
+				assocData[v].performances[p].artist = _.filter(ajaxData.artists, function(a) {
+					return a.id == assocData[v].performances[p].artist_id;
+				})[0];
+			}
+		}
+
+		that.data = $.extend(true, [], assocData); //copy data into public property so caller can't modify our source data
+	}
+
 	function filterGenre(venues, genre) {
 		var gSearch = new RegExp(genre);
 
@@ -420,7 +508,7 @@ function MapData() {
 			endTimeOb = parseTime(p.end_time);
 
 			return (hour == startTimeOb.hour24 && minute >= startTimeOb.minute || hour > startTimeOb.hour24) &&
-				(hour == endTimeOb.hour24 && minute <= endTimeOb.minute     || hour < endTimeOb.hour24);
+			       (hour == endTimeOb.hour24 && minute <= endTimeOb.minute     || hour < endTimeOb.hour24);
 		});
 	}
 
@@ -451,32 +539,6 @@ function MapData() {
 				return v.performances.length > 0;
 			})
 			.value();
-	}
-
-
-	function onAjaxComplete(ajaxData) {
-		//associate the data.
-		assocData = [];
-		for (var v = 0; v < ajaxData.venues.length; v++) {
-			//venue
-			assocData.push(ajaxData.venues[v]);
-			//venue.performances
-			assocData[v].performances = _.filter(ajaxData.performances, function(p) {
-				return p.venue_id == assocData[v].id;
-			});
-			for (var p = 0; p < assocData[v].performances.length; p++) {
-				//venue.performances.artist
-				assocData[v].performances[p].artist = _.filter(ajaxData.artists, function(a) {
-					return a.id == assocData[v].performances[p].artist_id;
-				})[0];
-			}
-		}
-
-		this.data = $.extend(true, [], assocData); //copy data into public property so caller can't modify our source data
-
-		if (typeof(onAjaxCompleteCallback) === 'function') {
-			onAjaxCompleteCallback();
-		}
 	}
 }
 

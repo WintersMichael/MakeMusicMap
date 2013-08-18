@@ -5,6 +5,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  color: #333;
+  background-color: #F4F4F4;
 }
 
 #loading {
@@ -16,6 +18,7 @@ body {
 	text-align: center;
 	background-color: white;
 	z-index: 99;
+	opacity: 0.9;
 }
 #loading div {
 	position: absolute;
@@ -30,21 +33,70 @@ body {
 	margin-bottom: 8px;
 }
 
-
-#map-canvas {
-  position: absolute;
-  top: 0; bottom: 0; right: 0;
-  left: 370px;
+.title {
+  text-align: center;
 }
 
-#performances-container {
-  position: absolute;
-  top: 0; bottom: 0; left: 0;
+.description {
+  width: 500px;
+  margin: auto;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+#map {
+  width: 100%;
+  height: 600px;
+  border-top: 1px solid #B4B4B4;
+  border-bottom: 1px solid #B4B4B4;
+}
+
+#map-canvas {
+  height: 100%;
+}
+
+#sidebar {
   width: 369px;
-  background-color: #F4F4F4;
+  height: 100%;
+  float: left;
   border-right-style:solid;
   border-right-width:1px;
   border-right-color:#B4B4B4;
+}
+
+#cities-container {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.city {
+  position: relative;
+  height: 140px;
+  border-bottom: 1px solid #C6C6C6;
+  cursor: pointer;
+}
+
+.city:hover {
+  background-color: #EEE;
+}
+
+.city .city-logo {
+  /* Center vertically */
+  margin: auto;
+  position: absolute;
+  top: 0; bottom: 0; left: 20px;
+}
+
+.city .city-name {
+  position: absolute;
+  top: 50%;
+  margin-top: -0.5em;
+  margin-left: 190px;
+}
+
+#performances-container {
+  display: none;
 }
 
 #filters {
@@ -56,10 +108,8 @@ body {
 }
 
 #performances {
-  position: absolute;
-  bottom: 0;
-  top: 195px;
   width: 350px;
+  height: 384px;
   padding: 10px;
   text-align: center;
   overflow-y: auto;
@@ -122,8 +172,19 @@ body {
   height: auto;
 }
 
-#city-logo {
+.left-pane {
   float: left;
+  text-align: center;
+}
+
+#back-to-world {
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.city-logo {
   margin: 10px;
   max-width: 125px;
   max-height: 125px;
@@ -145,4 +206,30 @@ body {
 
 .fancybox-overlay {
   background: url('fancybox_overlay_white.png');
+}
+
+#boxes {
+  width: 100%;
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+  padding: 30px 15px;
+  float: left;
+}
+
+.box {
+  width: 33.3%;
+  float: left;
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+  padding: 0 15px;
+}
+
+.inner-box {
+  padding: 15px;
+  border: 1px solid #B4B4B4;
+  text-align: center;
+}
+
+.inner-box img {
+  width: 50%;
 }

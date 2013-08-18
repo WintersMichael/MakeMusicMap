@@ -39,6 +39,12 @@
       </table>
     </div>
   </script>
+  <script id="city-template" type="text/x-handlebars-template">
+    <div class="city" data-id="{{id}}">
+      <img class="city-logo" src={{logo}} />
+      <h2 class="city-name">{{name}}</h2>
+    </div>
+  </script>
 </head>
 <body>
   <div id="loading">
@@ -47,57 +53,106 @@
       Loading...
     </div>
   </div>
-  <div id="performances-container">
-    <img id="city-logo" />
-    <div id="filters">
-      <div id="filters-title">Filters</div>
-      <table>
-        <tr>
-          <td class="filter-label">Genre:</td>
-          <td>
-            <select id="genre-filter">
-              <option value="">All</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td class="filter-label">Artist:</td>
-          <td>
-            <input id="artistname-filter" type="text"></input>
-          </td>
-        </tr>
-        <tr>
-          <td class="filter-label">Venue:</td>
-          <td>
-            <input id="venuename-filter" type="text"></input>
-          </td>
-        </tr>
-        <tr>
-          <td class="filter-label">Time:</td>
-          <td>
-            <select id="time-filter">
-              <option value="">All</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <span class="filter-label">Playing now:</span>
-            <input type="checkbox" id="current"></input>
-          </td>
-        </tr>
-      </table>
+  <h1 class="title">Make Music World</h1>
+  <p class="description">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+    commodo consequat.
+  </p>
+  <div id="map">
+    <div id="sidebar">
+      <div id="cities-container">
+        <div id="cities-list"></div>
+      </div>
+      <div id="performances-container">
+        <div class="left-pane">
+          <button id="back-to-world">Show World</button>
+          <img class="city-logo" />
+        </div>
+        <div id="filters">
+          <div id="filters-title">Filters</div>
+          <table>
+            <tr>
+              <td class="filter-label">Genre:</td>
+              <td>
+                <select id="genre-filter">
+                  <option value="">All</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="filter-label">Artist:</td>
+              <td>
+                <input id="artistname-filter" type="text"></input>
+              </td>
+            </tr>
+            <tr>
+              <td class="filter-label">Venue:</td>
+              <td>
+                <input id="venuename-filter" type="text"></input>
+              </td>
+            </tr>
+            <tr>
+              <td class="filter-label">Time:</td>
+              <td>
+                <select id="time-filter">
+                  <option value="">All</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <span class="filter-label">Playing now:</span>
+                <input type="checkbox" id="current"></input>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div id="performances">
+          <div id="instructions">Click map to view performances.</div>
+          <h3 id="venue-name"></h3>
+          <div id="venue-address"></div>
+          <div id="venue-rain"></div>
+          <div id="performances-list"></div>
+        </div>
+      </div>
     </div>
-    <div id="performances">
-      <div id="instructions">Click map to view performances.</div>
-      <h3 id="venue-name"></h3>
-      <div id="venue-address"></div>
-      <div id="venue-rain"></div>
-      <div id="performances-list"></div>
+    <div id="map-canvas"></div>
+  </div>
+  <div id="boxes">
+    <div class="box">
+      <div class="inner-box">
+        <img src="http://map2013.makemusicmatch.org/cities/mmmadison.png" />
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <button>Hi</button>
+      </div>
+    </div>
+    <div class="box">
+      <div class="inner-box">
+        <img src="http://map2013.makemusicmatch.org/cities/mmmadison.png" />
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <button>Hi</button>
+      </div>
+    </div>
+    <div class="box">
+      <div class="inner-box">
+        <img src="http://map2013.makemusicmatch.org/cities/mmmadison.png" />
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <button>Hi</button>
+      </div>
     </div>
   </div>
-  <div id="map-canvas"/>
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>

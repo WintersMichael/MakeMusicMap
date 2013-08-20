@@ -5,8 +5,12 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  color: #333;
-  background-color: #F4F4F4;
+  color: #343319;
+  background-color: white;
+}
+
+::selection {
+  background: #c0eb78;
 }
 
 #loading {
@@ -33,15 +37,22 @@ body {
 	margin-bottom: 8px;
 }
 
+.header {
+  max-width: 800px;
+  margin: auto;
+}
+
+#mm-logo {
+  height: 220px;
+  float: left;
+}
+
 .title {
   text-align: center;
 }
 
 .description {
-  width: 500px;
-  margin: auto;
-  margin-bottom: 30px;
-  text-align: center;
+  padding-top: 72px;
 }
 
 #map {
@@ -49,6 +60,7 @@ body {
   height: 600px;
   border-top: 1px solid #B4B4B4;
   border-bottom: 1px solid #B4B4B4;
+  clear: both;
 }
 
 #map-canvas {
@@ -78,7 +90,7 @@ body {
 }
 
 .city:hover {
-  background-color: #EEE;
+  background-color: #E1F2C4;
 }
 
 .city .city-logo {
